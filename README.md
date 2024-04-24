@@ -1,0 +1,2 @@
+# Recipes
+Blazor WASM Recipes
