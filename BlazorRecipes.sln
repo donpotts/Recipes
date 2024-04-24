@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorRecipes", "BlazorRecipes\BlazorRecipes.csproj", "{CA10A7E6-1B49-4C9D-BA73-973F551FAAEE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorRecipes.Shared", "BlazorRecipes.Shared\BlazorRecipes.Shared.csproj", "{E7AD6708-3439-4756-9CBA-5665965BE195}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorRecipes.ConsoleClient", "BlazorRecipes.ConsoleClient\BlazorRecipes.ConsoleClient.csproj", "{983B1918-2210-4651-9A66-A99103B8FF40}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorRecipes.Shared.Blazor", "BlazorRecipes.Shared.Blazor\BlazorRecipes.Shared.Blazor.csproj", "{1A327985-0D5F-400D-B107-CAC76E78C60E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorRecipes.Blazor", "BlazorRecipes.Blazor\BlazorRecipes.Blazor.csproj", "{5DAD430E-FE46-49A0-9E60-54E5186FEFFF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{74471ACF-6AB8-4CA2-B909-E474986F957F}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA10A7E6-1B49-4C9D-BA73-973F551FAAEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA10A7E6-1B49-4C9D-BA73-973F551FAAEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA10A7E6-1B49-4C9D-BA73-973F551FAAEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA10A7E6-1B49-4C9D-BA73-973F551FAAEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7AD6708-3439-4756-9CBA-5665965BE195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7AD6708-3439-4756-9CBA-5665965BE195}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7AD6708-3439-4756-9CBA-5665965BE195}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7AD6708-3439-4756-9CBA-5665965BE195}.Release|Any CPU.Build.0 = Release|Any CPU
+		{983B1918-2210-4651-9A66-A99103B8FF40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{983B1918-2210-4651-9A66-A99103B8FF40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{983B1918-2210-4651-9A66-A99103B8FF40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{983B1918-2210-4651-9A66-A99103B8FF40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A327985-0D5F-400D-B107-CAC76E78C60E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A327985-0D5F-400D-B107-CAC76E78C60E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A327985-0D5F-400D-B107-CAC76E78C60E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A327985-0D5F-400D-B107-CAC76E78C60E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DAD430E-FE46-49A0-9E60-54E5186FEFFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DAD430E-FE46-49A0-9E60-54E5186FEFFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DAD430E-FE46-49A0-9E60-54E5186FEFFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DAD430E-FE46-49A0-9E60-54E5186FEFFF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

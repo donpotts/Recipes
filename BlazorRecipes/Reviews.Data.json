@@ -1,0 +1,86 @@
+[
+  {
+    "Id": 1,
+    "Rating": 4.2,
+    "Comment": "This stuff is very good!",
+    "User": "",
+    "RecipesId": null
+  },
+  {
+    "Id": 2,
+    "Rating": 5,
+    "Comment": "Excellent!",
+    "User": "Admin User",
+    "RecipesId": 2
+  },
+  {
+    "Id": 3,
+    "Rating": 5,
+    "Comment": "Excellent!",
+    "User": "Admin User",
+    "RecipesId": 5
+  },
+  {
+    "Id": 4,
+    "Rating": 5,
+    "Comment": "Excellent!",
+    "User": "Admin User",
+    "RecipesId": 3
+  },
+  {
+    "Id": 5,
+    "Rating": 5,
+    "Comment": "Excellent!",
+    "User": "Admin User",
+    "RecipesId": 4
+  },
+  {
+    "Id": 8,
+    "Rating": 5,
+    "Comment": "It's really tasty!",
+    "User": "Andrew Potts",
+    "RecipesId": 7
+  },
+  {
+    "Id": 9,
+    "Rating": 5,
+    "Comment": "Tastes great!",
+    "User": "Don Potts",
+    "RecipesId": 7
+  },
+  {
+    "Id": 10,
+    "Rating": 5,
+    "Comment": "I loved it. It's great with rice!",
+    "User": "Andrew Potts",
+    "RecipesId": 8
+  },
+  {
+    "Id": 11,
+    "Rating": 5,
+    "Comment": "Love this with nachos!",
+    "User": "Andrew Potts",
+    "RecipesId": 9
+  },
+  {
+    "Id": 12,
+    "Rating": 5,
+    "Comment": "Silky and chocolatey, love it!",
+    "User": "Andrew Potts",
+    "RecipesId": 10
+  },
+  {
+    "Id": 13,
+    "Rating": 5,
+    "Comment": "Delicious creamy soup made even better with bacon!",
+    "User": "Andrew Potts",
+    "RecipesId": 11
+  },
+  {
+    "Id": 14,
+    "Rating": 5,
+    "Comment": "Comes out perfect every time!",
+    "User": "Andrew Potts",
+    "RecipesId": 12
+  }
+]

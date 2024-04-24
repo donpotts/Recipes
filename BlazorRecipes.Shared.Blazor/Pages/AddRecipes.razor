@@ -1,0 +1,213 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+
+<style>
+.mud-btn-nowrap {
+    white-space: nowrap;
+}
+
+.mud-btn-margin {
+    margin-top: 15px;
+}
+</style>
+
+<EditForm Model="@record" OnValidSubmit="@OnSubmit">
+    <DataAnnotationsValidator />
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">Add Recipe</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="Name" />
+            <MudTextField @bind-Value="record.Source" For="@(() => record.Source)" Label="Source" />
+            <MudTextField @bind-Value="record.PrepTime" For="@(() => record.PrepTime)" Label="PrepTime" />
+            <MudTextField @bind-Value="record.CookTime" For="@(() => record.CookTime)" Label="CookTime" />
+            <MudNumericField @bind-Value="record.Servings" For="@(() => record.Servings)" Label="Servings" />
+            <MudTextField @bind-Value="record.RecipeIngredients" For="@(() => record.RecipeIngredients)" Label="Ingredients" Lines="4" AutoGrow="true" MaxLines="20" />
+            <MudTextField @bind-Value="record.Comments" For="@(() => record.Comments)" Label="Comments" />
+            <MudTextField @bind-Value="record.Instructions" For="@(() => record.Instructions)" Label="Instructions" Lines="4" AutoGrow="true" MaxLines="4" />
+            <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Photo = await UploadImageAsync(args, 1440, 1440))" Accept=".png,.jpg,.jpeg">
+                <ButtonTemplate Context="btnContext">
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="@btnContext">
+                        Upload Photo
+                    </MudButton>
+                </ButtonTemplate>
+            </MudFileUpload>
+            
+            @if (!string.IsNullOrEmpty(record.Photo))
+            {
+                <MudImage Src="@GetAbsoluteUri(record.Photo)" Style="width:100%;height:300px;object-fit:contain;" Class="mt-1" />
+            }
+            <div style="padding:16px;">
+            <MudPaper Elevation="1" Outlined="true" Padding="16px">
+                    <div style="padding:16px;">
+                    <MudGrid>
+                        <MudItem xs="8" sm="8">
+                            <MudText Typo="Typo.h6">Add Ingredient</MudText>
+                        </MudItem>
+                        <MudItem xs="4" sm="4" Style="display: flex; justify-content: flex-end;">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mud-btn-nowrap mud-btn-margin" OnClick="@(e => OnAddIngredients(record))" Style="width: 100%;">Add Ingredient</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="8" sm="8">
+                            <MudNumericField @bind-Value="quantity" Label="Enter quantity" Step="0.01" />
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid Style="margin-bottom: 10px;" >
+                        <MudItem xs="8" sm="8">
+                            <MudSelect T="string" Label="Unit Measurement" @bind-Value="selectedUnit" AnchorOrigin="Origin.BottomCenter">
+                                @foreach (var units in unitsArray ?? Enumerable.Empty<Units>())
+                                {
+                                    <MudSelectItem T="string" Value="@units.Name">@units.Name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
+                    <MudItem Style="margin-bottom: 10px;" >
+                        <MudText Typo="Typo.inherit">of</MudText>
+                    </MudItem>
+                    <MudGrid>
+                        <MudItem xs="8" sm="8">
+                            <MudSelect T="string" Label="Ingredient" @bind-Value="selectedIngredient" AnchorOrigin="Origin.BottomCenter">
+                                @foreach (var ingredients in ingredientsArray ?? Enumerable.Empty<Ingredients>())
+                                {
+                                    <MudSelectItem T="string" Value="@ingredients.Name">@ingredients.Name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
+                    </Div>
+                </MudPaper>
+            </div>
+            <MudSelect T="long?" Label="Tags" MultiSelection="true" @bind-SelectedValues="tagsValues" MultiSelectionTextFunc="@(x => string.Join(", ", x.Select(s => tagsArray?.FirstOrDefault(i => i.Id?.ToString() == s)?.Name)))" AnchorOrigin="Origin.BottomCenter">
+                @foreach (var tags in tagsArray ?? Enumerable.Empty<Tags>())
+                {
+                    <MudSelectItem T="long?" Value="@tags.Id">@tags.Name</MudSelectItem>
+                }
+            </MudSelect>
+            @* <MudSelect T="long?" Label="Reviews" MultiSelection="true" @bind-SelectedValues="reviewsValues" MultiSelectionTextFunc="@(x => string.Join(", ", x.Select(s => reviewsArray?.FirstOrDefault(i => i.Id?.ToString() == s)?.Rating)))" AnchorOrigin="Origin.BottomCenter">
+                @foreach (var reviews in reviewsArray ?? Enumerable.Empty<Reviews>())
+                {
+                    <MudSelectItem T="long?" Value="@reviews.Id">@reviews.Rating</MudSelectItem>
+                }
+            </MudSelect> *@
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="OnCancel">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Add</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private double quantity = 1;
+    private string selectedUnit = "";
+    private string selectedIngredient = "";
+    private Ingredients[]? ingredientsArray;
+    private Units[]? unitsArray;
+    private Tags[]? tagsArray;
+    private IEnumerable<long?>? tagsValues;
+    private Reviews[]? reviewsArray;
+    private IEnumerable<long?>? reviewsValues;
+    private Recipes record = new();
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
+        {
+            ingredientsArray = await AppService.ListIngredientsAsync();
+            unitsArray = await AppService.ListUnitsAsync();
+            tagsArray = await AppService.ListTagsAsync();
+            reviewsArray = await AppService.ListReviewsAsync();
+            tagsValues = record?.Tags?.Select(x => x.Id).ToHashSet() ?? [];
+            reviewsValues = record?.Reviews?.Select(x => x.Id).ToHashSet() ?? [];
+        }
+        catch(Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private void OnCancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async void OnSubmit()
+    {
+        try
+        {
+            record.Tags = tagsValues?.Select(x => new Tags { Id = x }).ToList();
+            record.Reviews = reviewsValues?.Select(x => new Reviews { Id = x }).ToList();
+            await AppService.InsertRecipesAsync(record);
+            MudDialog?.Close();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task<string?> UploadImageAsync(IBrowserFile file, int maxWidth = 1440, int maxHeight = 1440)
+    {
+        if (file.ContentType != "image/png" && file.ContentType != "image/jpeg")
+        {
+            Snackbar.Add("Only PNG or JPEG images can be uploaded.", Severity.Error);
+            return null;
+        }
+
+        var image = await file.RequestImageFileAsync("image/png", maxWidth, maxHeight);
+
+        try
+        {
+            return await AppService.UploadImageAsync(image);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        return null;
+    }
+
+    private void OnAddIngredients(Recipes record)
+    {
+        string newIngredient = quantity + " " + selectedUnit + " of " + selectedIngredient;
+
+        if (string.IsNullOrEmpty(record.RecipeIngredients))
+        {
+            record.RecipeIngredients = newIngredient;
+        }
+        else
+        {
+            record.RecipeIngredients += "\n" + newIngredient;
+        }
+        
+    }
+}

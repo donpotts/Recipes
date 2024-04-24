@@ -1,0 +1,315 @@
+@page "/cardrecipes"
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject HttpClient HttpClient
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+@attribute [Authorize]
+
+<PageTitle>Recipes</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Recipes</MudText>
+</div>
+
+<MudStack AlignItems="AlignItems.End" Class="mb-3" Spacing="5" Row="true">
+        <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true" ValueChanged="@(value => SearchChanged(value))"></MudTextField>
+        <MudSelect Label="Order by" T="string" Value="selectedOrder" ValueChanged="(string value) => OrderCards(value)">
+            <MudSelectItem Value="nameasc">Name Ascending</MudSelectItem>
+            <MudSelectItem Value="namedec">Name Descending</MudSelectItem>
+            <MudSelectItem Value="source">Source</MudSelectItem>
+        </MudSelect>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
+        <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.SaveAlt" OnClick="ExportAllToCSV">Export</MudButton>
+</MudStack>
+
+<!-- Begin cards -->
+@if (RecipesResult != null)
+{
+    <MudText Class="mt-6 mb-3" Typo="Typo.h5">Cards</MudText>
+    <MudGrid Class="mb-3">
+        @foreach (var recipe in RecipesResult.Value ?? Enumerable.Empty<Recipes>())
+        {
+            <MudItem xs="12" md="3">
+                <MudCard Class="max-height-card" @onclick="@(e => OnCardClick(recipe))">
+                    <MudCardMedia Class="custom-cursor" Image="@GetAbsoluteUri(recipe.Photo ?? " ")"></MudCardMedia>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">@recipe.Name</MudText>
+                        <MudText Typo="Typo.body2">@recipe.SourceShort</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudRating Size="Size.Small" ReadOnly="true" SelectedValue="@GetRating(recipe)" Color="Color.Warning" ItemCount="5" />
+                        <AuthorizeView Roles="Administrator">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(recipe))" />
+                            <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(recipe))" />
+                        </AuthorizeView>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+    <div class="d-flex align-center justify-center mb-3">
+        <MudPagination Color="Color.Primary" Count="pageCount" Selected="selectedPage" SelectedChanged="OnSelectedChangedAsync" />
+    </div>
+}
+
+<!-- End cards -->
+
+<script>
+    window.downloadFromBase64 = function (base64, filename) {
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        var byteCharacters = atob(base64);
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var byteArray = new Uint8Array(byteNumbers);
+        var blob = new Blob([byteArray], { type: "application/octet-stream" });
+        var url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+</script>
+
+@code {
+    // Begin cards
+    private const int PageSize = 8;
+    private AppService.ODataResult<Recipes>? RecipesResult;
+    private int pageCount = 1;
+    private int selectedPage = 1;
+    private string? _searchString;
+    private string nameasc = "name asc";
+    private string namedec = "name desc";
+    private string source = "source asc";
+    string selectedOrder = "name asc";
+
+    private async void OrderCards(string order)
+    {
+        selectedOrder = order;
+
+        await ReloadDataAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadDataAsync();
+    }
+
+    private async Task OnSelectedChangedAsync(int selected)
+    {
+        selectedPage = selected;
+        await ReloadDataAsync();
+    }
+
+    private async Task ReloadDataAsync()
+    {
+        var orderby = selectedOrder;
+        var filter = "";
+
+        AppService.ODataResult<Recipes>? result = null;
+
+        try
+        {
+            if (_searchString?.Length > 0)
+            {
+                bool isNumeric = double.TryParse(_searchString, out _);
+                bool isDateTime = DateTime.TryParse(_searchString, out _);
+
+                if (isNumeric)
+                {
+                    filter = $"Id eq {_searchString} or Servings eq {_searchString}";
+                }
+                else if (isDateTime)
+                {
+                    filter = $"";
+                }
+                else
+                {
+                    filter = $"contains(tolower(Name), '{_searchString}') or contains(tolower(Source), '{_searchString}') or contains(tolower(PrepTime), '{_searchString}') or contains(tolower(WaitTime), '{_searchString}') or contains(tolower(CookTime), '{_searchString}') or contains(tolower(RecipeIngredients), '{_searchString}') or contains(tolower(Comments), '{_searchString}') or contains(tolower(Instructions), '{_searchString}') ";
+                }
+            }
+            var skip = (selectedPage - 1) * PageSize;
+
+            RecipesResult = await AppService.ListRecipesODataAsync(PageSize, skip, orderby, filter, count: true, "Tags,Ingredients,Units,Reviews");
+
+            if (RecipesResult?.Count.HasValue ?? false)
+            {
+                pageCount = (int)Math.Ceiling((double)RecipesResult.Count.Value / PageSize);
+            }
+            else
+            {
+                pageCount = 1;
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+    // End cards
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+
+    private async void OnAdd()
+    {
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        var result = await DialogService.Show<AddRecipes>("Add Recipes", dialogOptions).Result;
+
+        if (!result.Canceled)
+        {
+            await ReloadDataAsync();
+        }
+    }
+
+    private async void OnEdit(Recipes record)
+    {
+        DialogParameters<UpdateRecipes> dialogParams = new() { { x => x.Id, record.Id!.Value } };
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        var result = await DialogService.Show<UpdateRecipes>("Update Recipes", dialogParams, dialogOptions).Result;
+
+        if (!result.Canceled)
+        {
+            await ReloadDataAsync();
+        }
+    }
+
+    private async void OnDelete(Recipes record)
+    {
+        var result = await DialogService.ShowMessageBox(
+            "Warning",
+            "Are you sure you want to delete this record?",
+            "Delete",
+            "Cancel");
+
+        if (result.GetValueOrDefault(false))
+        {
+            try
+            {
+                await AppService.DeleteRecipesAsync(record.Id!.Value);
+                await ReloadDataAsync();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+
+    private int GetRating(Recipes record)
+    {
+        if (record != null && record.Reviews != null)
+        {
+            return (int)record.Reviews.AverageRating();
+        }
+        else
+            return 0;
+    }
+
+    private void OnCardClick(Recipes recipe)
+    {
+        var recipeId = recipe.Id; // Assuming your recipe object has an Id property
+        NavManager.NavigateTo($"/recipe/{recipeId}");
+    }
+
+    private async void SearchChanged(string Value)
+    {
+        if (Value.EndsWith("."))
+        {
+            return;
+        }
+        _searchString = Value.ToString().ToLower();
+        try
+        {
+            if (_searchString.Length > 18)
+            {
+                DateTimeOffset dateTime = DateTime.Parse(_searchString);
+                _searchString = dateTime.ToString("yyyy-MM-ddTHH:mm:ssK");
+                //Console.WriteLine(_searchString);
+            }
+        }
+        catch
+        {
+            return;
+        }
+        await ReloadDataAsync();
+    }
+
+    private async Task ExportAllToCSV()
+    {
+        AppService.ODataResult<Recipes>? result = null;
+
+        try
+        {
+            // Fetch all data from the OData service without any filters or restrictions
+            result = await AppService.ListRecipesODataAsync(null, null, null, null, true, "Tags,Ingredients,Units,Reviews");
+
+            if (result != null && result?.Value != null)
+            {
+                var ar = result?.Value.ToList().Select(x => new
+                {
+                    x.Id,
+                    x.Name,
+                    x.Source,
+                    x.PrepTime,
+                    x.WaitTime,
+                    x.CookTime,
+                    x.Servings,
+                    x.RecipeIngredients,
+                    x.Comments,
+                    x.Instructions,
+                    x.Photo,
+                    Tags = string.Join(", ", x.Tags?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
+                    Ingredients = string.Join(", ", x.Ingredients?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
+                    Units = string.Join(", ", x.Units?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
+                    Reviews = string.Join(", ", x.Reviews?.Select(x => x.Rating.ToString() ?? string.Empty) ?? []),
+
+                });
+
+                using var memoryStream = new MemoryStream();
+                using (var writer = new StreamWriter(memoryStream))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecords(ar); // use CSVHelper to write the records to the CSV file
+                }
+                // Convert MemoryStream to ByteArray
+                var byteArray = memoryStream.ToArray();
+
+                // Convert ByteArray to Base64String
+                var base64 = Convert.ToBase64String(byteArray);
+
+                // Trigger file download
+                await JSRuntime.InvokeVoidAsync("downloadFromBase64", base64, "Recipes_" + System.DateTime.Now.ToString("yyyyMMddHHmmss") + ".csv");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+}

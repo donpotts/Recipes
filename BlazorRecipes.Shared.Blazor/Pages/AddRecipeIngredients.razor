@@ -1,0 +1,126 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+
+<EditForm Model="@record" OnValidSubmit="@OnSubmit">
+    <DataAnnotationsValidator />
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">Add RecipeIngredients</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudNumericField @bind-Value="record.Quantity" For="@(() => record.Quantity)" Label="Quantity" />
+            <MudSelect @bind-Value="record.RecipesId" For="@(() => record.RecipesId)" Label="Recipes" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem T="long?" Value="null" />
+                @foreach (var recipes in recipesArray ?? Enumerable.Empty<Recipes>())
+                {
+                    <MudSelectItem Value="@recipes.Id">@recipes.Id</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect @bind-Value="record.IngredientsId" For="@(() => record.IngredientsId)" Label="Ingredients" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem T="long?" Value="null" />
+                @foreach (var ingredients in ingredientsArray ?? Enumerable.Empty<Ingredients>())
+                {
+                    <MudSelectItem Value="@ingredients.Id">@ingredients.Id</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect @bind-Value="record.UnitsId" For="@(() => record.UnitsId)" Label="Units" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem T="long?" Value="null" />
+                @foreach (var units in unitsArray ?? Enumerable.Empty<Units>())
+                {
+                    <MudSelectItem Value="@units.Id">@units.Id</MudSelectItem>
+                }
+            </MudSelect>
+
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="OnCancel">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Add</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private Recipes[]? recipesArray;
+    private Ingredients[]? ingredientsArray;
+    private Units[]? unitsArray;
+    private RecipeIngredients record = new();
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
+        {
+            recipesArray = await AppService.ListRecipesAsync();
+            ingredientsArray = await AppService.ListIngredientsAsync();
+            unitsArray = await AppService.ListUnitsAsync();
+        }
+        catch(Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private void OnCancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async void OnSubmit()
+    {
+        try
+        {
+            await AppService.InsertRecipeIngredientsAsync(record);
+            MudDialog?.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task<string?> UploadImageAsync(IBrowserFile file, int maxWidth = 1440, int maxHeight = 1440)
+    {
+        if (file.ContentType != "image/png" && file.ContentType != "image/jpeg")
+        {
+            Snackbar.Add("Only PNG or JPEG images can be uploaded.", Severity.Error);
+            return null;
+        }
+
+        var image = await file.RequestImageFileAsync("image/png", maxWidth, maxHeight);
+
+        try
+        {
+            return await AppService.UploadImageAsync(image);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+        return null;
+    }
+}

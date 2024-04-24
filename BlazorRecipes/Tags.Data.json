@@ -1,0 +1,202 @@
+[
+  {
+    "Id": 1,
+    "Name": "SOUP"
+  },
+  {
+    "Id": 2,
+    "Name": "BEEF"
+  },
+  {
+    "Id": 3,
+    "Name": "FAMILY_RECIPES"
+  },
+  {
+    "Id": 4,
+    "Name": "DESSERT"
+  },
+  {
+    "Id": 5,
+    "Name": "CHICKEN"
+  },
+  {
+    "Id": 6,
+    "Name": "PORK"
+  },
+  {
+    "Id": 7,
+    "Name": "CAKE"
+  },
+  {
+    "Id": 8,
+    "Name": "MEXICAN"
+  },
+  {
+    "Id": 9,
+    "Name": "AMERICAN"
+  },
+  {
+    "Id": 10,
+    "Name": "VEGAN"
+  },
+  {
+    "Id": 11,
+    "Name": "GLUTEN_FREE"
+  },
+  {
+    "Id": 12,
+    "Name": "QUICK_EASY"
+  },
+  {
+    "Id": 13,
+    "Name": "ITALIAN"
+  },
+  {
+    "Id": 14,
+    "Name": "SEAFOOD"
+  },
+  {
+    "Id": 15,
+    "Name": "BBQ"
+  },
+  {
+    "Id": 16,
+    "Name": "ASIAN"
+  },
+  {
+    "Id": 17,
+    "Name": "MEDITERRANEAN"
+  },
+  {
+    "Id": 18,
+    "Name": "LOW_CARB"
+  },
+  {
+    "Id": 19,
+    "Name": "VEGETARIAN"
+  },
+  {
+    "Id": 20,
+    "Name": "BREAKFAST"
+  },
+  {
+    "Id": 21,
+    "Name": "BRUNCH"
+  },
+  {
+    "Id": 22,
+    "Name": "LUNCH"
+  },
+  {
+    "Id": 23,
+    "Name": "DINNER"
+  },
+  {
+    "Id": 24,
+    "Name": "SNACKS"
+  },
+  {
+    "Id": 25,
+    "Name": "APPETIZERS"
+  },
+  {
+    "Id": 26,
+    "Name": "DRINKS"
+  },
+  {
+    "Id": 27,
+    "Name": "COCKTAILS"
+  },
+  {
+    "Id": 28,
+    "Name": "PASTA"
+  },
+  {
+    "Id": 29,
+    "Name": "SALADS"
+  },
+  {
+    "Id": 30,
+    "Name": "BREADS"
+  },
+  {
+    "Id": 31,
+    "Name": "SANDWICHES"
+  },
+  {
+    "Id": 32,
+    "Name": "SEAFOOD"
+  },
+  {
+    "Id": 33,
+    "Name": "FRENCH"
+  },
+  {
+    "Id": 34,
+    "Name": "INDIAN"
+  },
+  {
+    "Id": 35,
+    "Name": "CHINESE"
+  },
+  {
+    "Id": 36,
+    "Name": "JAPANESE"
+  },
+  {
+    "Id": 37,
+    "Name": "THAI"
+  },
+  {
+    "Id": 38,
+    "Name": "GREEK"
+  },
+  {
+    "Id": 39,
+    "Name": "SPANISH"
+  },
+  {
+    "Id": 40,
+    "Name": "GERMAN"
+  },
+  {
+    "Id": 41,
+    "Name": "MIDDLE_EASTERN"
+  },
+  {
+    "Id": 42,
+    "Name": "LATIN_AMERICAN"
+  },
+  {
+    "Id": 43,
+    "Name": "CARIBBEAN"
+  },
+  {
+    "Id": 44,
+    "Name": "AFRICAN"
+  },
+  {
+    "Id": 45,
+    "Name": "KETO"
+  },
+  {
+    "Id": 46,
+    "Name": "PALEO"
+  },
+  {
+    "Id": 47,
+    "Name": "DAIRY_FREE"
+  },
+  {
+    "Id": 48,
+    "Name": "NUT_FREE"
+  },
+  {
+    "Id": 49,
+    "Name": "SUGAR_FREE"
+  },
+  {
+    "Id": 50,
+    "Name": "EGG_FREE"
+  }
+]

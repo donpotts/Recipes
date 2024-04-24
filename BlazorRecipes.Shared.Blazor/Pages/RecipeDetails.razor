@@ -1,0 +1,193 @@
+﻿@page "/recipe/{Id:long?}"
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject HttpClient HttpClient
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+@attribute [Authorize]
+
+<style>
+    .mud-paper {
+        width: 50%;
+        max-width: 50%;
+        margin-left: 0; /* Left-align the MudPaper */
+    }
+
+        .mud-paper > div {
+            display: flex;
+            flex-direction: column; /* Stack reviews top to bottom */
+        }
+</style>
+
+<PageTitle>Recipe Details</PageTitle>
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Recipe Details</MudText>
+</div>
+<MudLink Href="cardrecipes">←Back to all recipes</MudLink>
+<div>
+</div>
+@if (record != null)
+{
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <div>
+            <MudText Class="text-center width: 100%;" Style="margin-bottom: 20px;" Typo="Typo.h4">@record.Name</MudText>
+            <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 20px;">
+                <MudText Class="text-center width: 100%;" Style="margin-bottom: 20px;" Typo="Typo.body2">@record.SourceShort | SERVINGS: @record.Servings</MudText>
+            </div>
+            <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 20px;">
+                <MudRating Size="Size.Small" ReadOnly="true" SelectedValue="@GetRating(record)" Color="Color.Warning" ItemCount="5" />
+            </div>
+        </div>
+    </div>
+    <MudImage Style="width: 100%; height: auto; margin-bottom: 20px;" src="@GetAbsoluteUri(record.Photo ?? "")"></MudImage>
+    <MudContainer Class="justify-content-center">
+        <MudDivider />
+        <MudText Typo="Typo.h6" Style="margin-bottom: 20px;">Ingredients</MudText>
+        <MudText Typo="Typo.h6" Style="margin-bottom: 20px;">
+            @{
+                if (@record.RecipeIngredients != null)
+                {
+                    var ingredients = @record.RecipeIngredients.Split('\n');
+                    foreach (var ingredient in ingredients)
+                    {
+                        @ingredient <br />
+                    }
+                }
+            }
+        </MudText>
+        <MudDivider />
+        <MudText Typo="Typo.h6" Style="margin-bottom: 20px;">Prep Time</MudText>
+        <MudText Typo="Typo.h6" Style="margin-bottom: 20px;">@record.PrepTime</MudText>
+        <MudDivider />
+        <MudText Typo="Typo.h6" Style="margin-bottom: 20px;">Cook Time</MudText>
+        <MudText Typo="Typo.h6" Style="margin-bottom: 20px;">@record.CookTime</MudText>
+        <MudDivider />
+        <MudText Typo="Typo.h6" Style="margin-bottom: 20px;">Instructions</MudText>
+        <MudText Typo="Typo.h6" Style="margin-bottom: 20px; white-space: pre-line;">@record.Instructions</MudText>
+        <MudDivider />
+        <MudText Typo="Typo.h6" Style="margin-bottom: 20px;">Tags</MudText>
+        @if (recipeTagsValues != null)
+        @foreach (var tag in recipeTagsValues)
+        {
+            var tagName = recipeTagsArray?.FirstOrDefault(i => i.Id == tag)?.Name;
+            if (tagName != null)
+            {
+                <MudChip Color="Color.Primary">@tagName</MudChip>
+            }
+        }
+        <MudDivider Style="margin-bottom: 20px;" />
+        <MudText Typo="Typo.h6" Style="margin-bottom: 20px;">Reviews</MudText>
+        @if (record.Reviews != null)
+        foreach (var review in record.Reviews)
+        {
+            <MudPaper Elevation="1" Outlined="true" class="mud-paper">
+                <div style="display: flex; flex-direction: column;">
+                    <div Style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <MudText Typo="Typo.h6" Style="text-decoration: underline; font-style: italic;">
+                                @review.User
+                        </MudText>
+                        <MudRating Size="Size.Small" Style="margin-top: 8px; margin-left: 15px;" ReadOnly="true" SelectedValue="@GetRatingValue(review)" Color="Color.Warning" ItemCount="5" />
+                        <br />
+                    </div>
+                    <MudText Typo="Typo.h6" Style="white-space: pre-line;">
+                        @review.Comment <br />
+                    </MudText>
+                </div>
+            </MudPaper>
+        }
+        <MudText Typo="Typo.h6" Style="margin-bottom: 20px;"></MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mud-btn-nowrap mud-btn-margin" OnClick="@(e => OnAddReview(record))">Add Review</MudButton>
+    </MudContainer>
+}
+@code {
+    [Parameter]
+    public long Id { get; set; } = default!;
+
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private Tags[]? recipeTagsArray;
+    private IEnumerable<long?>? recipeTagsValues;
+    private Ingredients[]? ingredientsArray;
+    private Units[]? unitsArray;
+    private Recipes? record;
+    private IEnumerable<long?>? reviewsValues;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            recipeTagsArray = await AppService.ListTagsAsync();
+            ingredientsArray = await AppService.ListIngredientsAsync();
+            unitsArray = await AppService.ListUnitsAsync();
+            record = await AppService.GetRecipesByIdAsync(Id);
+            recipeTagsValues = record?.Tags?.Select(x => x.Id).ToHashSet() ?? [];
+            reviewsValues = record?.Reviews?.Select(x => x.Id).ToHashSet() ?? [];
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+
+    private int GetRating(Recipes record)
+    {
+        if (record != null && record.Reviews != null)
+        {
+            return (int)record.Reviews.AverageRating();
+        }
+        else
+            return 0;
+    }
+    private int GetRatingValue(Reviews record)
+    {
+        return (int)record.Rating;
+    }
+
+    private async void OnAddReview(Recipes record)
+    {
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        var result = await DialogService.Show<AddReviews>("Add Review", dialogOptions).Result;
+
+        if (!result.Canceled)
+        {
+            if (result.Data is long reviewId)
+            {
+                record.Reviews?.Add(new Reviews { Id = reviewId });
+            }
+
+            await AppService.UpdateRecipesAsync(Id, record);
+            await OnInitializedAsync();
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+        }
+    }
+}
