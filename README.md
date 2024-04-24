@@ -1,6 +1,6 @@
-# Blazor Recipes
+# Recipes
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/donpotts/recipes/Recipes.yml?logo=github)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/donpotts/recipes/blazorrecipes.yml?logo=github)
 
 ## Overview
 
@@ -33,7 +33,7 @@ This repository contains an ASP.NET Core application with a Blazor WebAssembly (
 ### Installation
 
 1. Clone the repo
-  git clone https://github.com/donpotts/BlazorRecipes.git
+  git clone https://github.com/donpotts/Recipes.git
 2. Install .NET packages
 3. Install MudBlazor packages
 4. Install any missing packages
