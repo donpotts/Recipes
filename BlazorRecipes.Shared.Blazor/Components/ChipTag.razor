@@ -1,0 +1,60 @@
+﻿@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject HttpClient HttpClient
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+@inject TagService TagService
+@attribute [Authorize]
+
+<h3>Tags</h3>
+@if (TagsResult != null && TagsResult.Value != null)
+{
+    <MudChip Color="Color.Primary" OnClick="() => OnChipClick(null)">All</MudChip>
+    @foreach (var chipTag in TagsResult.Value)
+    {
+        <MudChip Color="Color.Primary" OnClick="() => OnChipClick(chipTag.Name)">@chipTag.Name</MudChip>
+    }
+}
+
+@code 
+{
+    private const int PageSize = 8;
+    private AppService.ODataResult<Tags>? TagsResult = null;
+    private int pageCount = 1;
+    private int selectedPage = 1;
+    private string? _searchString;
+    private string nameasc = "name asc";
+    private string namedec = "name desc";
+    private string source = "source asc";
+    string selectedOrder = "name asc";
+
+    void OnChipClick(string tag)
+    {
+        TagService.SelectTag(tag);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadDataAsync();
+    }
+    private async Task ReloadDataAsync()
+    {
+        var orderby = "Name asc";
+        string filter = $"Recipes/any(r: r/Name ne null)";
+
+        try
+        {
+            TagsResult = await AppService.ListTagsODataAsync(null, null, orderby, filter, true, "Recipes");
+            if (TagsResult?.Count.HasValue ?? false)
+            {
+                Console.WriteLine("TagsResult="+TagsResult?.Value);
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+}

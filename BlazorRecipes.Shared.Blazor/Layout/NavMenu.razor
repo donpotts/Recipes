@@ -4,6 +4,7 @@
 @inject AppService AppService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorageService
+@inject NavigationManager NavManager
 
 <MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" />
 <MudAppBar Color="Color.Inherit">
@@ -71,6 +72,13 @@
         <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
         <AuthorizeView>
             <MudNavLink Href="/cardrecipes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Restaurant">Recipe Cards</MudNavLink>
+            @if (showChipTag)
+            {
+                <MudNavLink>
+                    <ChipTag></ChipTag>
+                </MudNavLink>
+            }
+
         </AuthorizeView>
         <AuthorizeView Roles="Administrator">
             <MudNavGroup Title="Admin" Expanded="false" Color="Color.Inherit" Icon="@Icons.Material.Outlined.Settings">
@@ -97,6 +105,7 @@
 }
 
 @code {
+    private bool showChipTag;
     private bool drawerOpen = true;
     bool _dark = true;
     private bool isDarkMode;
@@ -155,7 +164,21 @@
 
         await ThemeManagerChanged(_themeManager);
 
+        NavManager.LocationChanged += HandleLocationChanged;
+        showChipTag = NavManager.Uri.Contains("/cardrecipes");
     }
+
+     private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        showChipTag = NavManager.Uri.Contains("/cardrecipes");
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavManager.LocationChanged -= HandleLocationChanged;
+    }
+
     private void DrawerToggle()
     {
         drawerOpen = !drawerOpen;

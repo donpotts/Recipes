@@ -5,6 +5,7 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
+@inject TagService TagService
 @attribute [Authorize]
 
 <PageTitle>Recipes</PageTitle>
@@ -100,6 +101,12 @@
     private string namedec = "name desc";
     private string source = "source asc";
     string selectedOrder = "name asc";
+    string filter = "";
+
+    public void Dispose()
+    {
+        TagService.OnChange -= UpdateState;
+    }
 
     private async void OrderCards(string order)
     {
@@ -110,7 +117,22 @@
 
     protected override async Task OnInitializedAsync()
     {
+        TagService.OnChange += UpdateState;
         await ReloadDataAsync();
+    }
+
+    private async void UpdateState()
+    {
+        var tag = TagService.SelectedTag;
+
+        _searchString = "";
+        if (!string.IsNullOrEmpty(tag))
+            filter = $"Tags/any(t: t/Name eq '{tag}')";
+        else
+            filter = "";
+        
+        await ReloadDataAsync();
+        StateHasChanged();
     }
 
     private async Task OnSelectedChangedAsync(int selected)
@@ -122,8 +144,7 @@
     private async Task ReloadDataAsync()
     {
         var orderby = selectedOrder;
-        var filter = "";
-
+        
         AppService.ODataResult<Recipes>? result = null;
 
         try
