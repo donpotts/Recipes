@@ -24,7 +24,7 @@
         <MudToolBar>
             <MudLink Href="/" Class="d-flex px-4" Color="Color.Inherit">Home</MudLink>
             <AuthorizeView>
-                <MudLink Href="/recipes" Class="d-flex px-4" Color="Color.Inherit">Recipes</MudLink>
+                    <MudLink Href="/cardrecipes" Class="d-flex px-4" Color="Color.Inherit">Recipe Cards</MudLink>
             </AuthorizeView>
             <AuthorizeView Roles="Administrator">
                     <MudMenu StartIcon="@Icons.Material.Outlined.Settings" Color="Color.Inherit"  EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Label="Admin">
@@ -70,7 +70,7 @@
     <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Docked" Color="Color.Inherit">
         <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
         <AuthorizeView>
-            <MudNavLink Href="/cardrecipes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Restaurant">Card Recipes</MudNavLink>
+            <MudNavLink Href="/cardrecipes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Restaurant">Recipe Cards</MudNavLink>
         </AuthorizeView>
         <AuthorizeView Roles="Administrator">
             <MudNavGroup Title="Admin" Expanded="false" Color="Color.Inherit" Icon="@Icons.Material.Outlined.Settings">
