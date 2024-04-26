@@ -23,7 +23,7 @@ public class IngredientsController(ApplicationDbContext ctx) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult<IQueryable<Ingredients>> Get()
     {
-        return Ok(ctx.Ingredients);
+        return Ok(ctx.Ingredients.OrderBy(i => i.Name));
     }
 
     [HttpGet("{key}")]

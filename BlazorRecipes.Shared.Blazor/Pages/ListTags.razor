@@ -100,22 +100,26 @@
         {
             if (_searchString?.Length > 0)
             {
-               bool isNumeric = double.TryParse(_searchString, out _);
-               bool isDateTime = DateTime.TryParse(_searchString, out _);
+                bool isNumeric = double.TryParse(_searchString, out _);
+                bool isDateTime = DateTime.TryParse(_searchString, out _);
 
-               if (isNumeric)
-               {
-                   filter = $"Id eq {_searchString}";
-               }
-               else if (isDateTime)
-               {
-                   filter = $"";
-               }
-               else
-               {
-                   filter = $"contains(tolower(Name), '{_searchString}') ";
-               }
+                if (isNumeric)
+                {
+                    filter = $"Id eq {_searchString}";
+                }
+                else if (isDateTime)
+                {
+                    filter = $"";
+                }
+                else
+                {
+                    filter = $"contains(tolower(Name), '{_searchString}') ";
+                }
             }
+
+            if (orderby == null)
+                orderby = "Name asc";
+
             result = await AppService.ListTagsODataAsync(top, skip, orderby, filter, true, "Recipes");
         }
         catch (Exception ex)
@@ -209,10 +213,9 @@
             {
                 var ar = result?.Value.ToList().Select(x => new
                 {
-                        x.Id,
-    x.Name,
-Recipes = string.Join(", ", x.Recipes?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
-
+                    x.Id,
+                    x.Name,
+                    Recipes = string.Join(", ", x.Recipes?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
                 });
 
                 using var memoryStream = new MemoryStream();

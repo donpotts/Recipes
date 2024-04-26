@@ -23,7 +23,7 @@ public class TagsController(ApplicationDbContext ctx) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult<IQueryable<Tags>> Get()
     {
-        return Ok(ctx.Tags.Include(x => x.Recipes));
+        return Ok(ctx.Tags.OrderBy(i => i.Name).Include(x => x.Recipes));
     }
 
     [HttpGet("{key}")]

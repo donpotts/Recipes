@@ -321,7 +321,6 @@
                     Ingredients = string.Join(", ", x.Ingredients?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
                     Units = string.Join(", ", x.Units?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
                     Reviews = string.Join(", ", x.Reviews?.Select(x => x.Rating.ToString() ?? string.Empty) ?? []),
-
                 });
 
                 using var memoryStream = new MemoryStream();

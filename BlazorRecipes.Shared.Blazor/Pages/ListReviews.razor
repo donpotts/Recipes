@@ -206,11 +206,10 @@
             {
                 var ar = result?.Value.ToList().Select(x => new
                 {
-                        x.Id,
-    x.Rating,
-    x.Comment,
-    x.User,
-
+                    x.Id,
+                    x.Rating,
+                    x.Comment,
+                    x.User,
                 });
 
                 using var memoryStream = new MemoryStream();

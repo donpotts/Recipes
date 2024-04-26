@@ -147,6 +147,10 @@
                    filter = $"contains(tolower(Name), '{_searchString}') or contains(tolower(Source), '{_searchString}') or contains(tolower(PrepTime), '{_searchString}') or contains(tolower(WaitTime), '{_searchString}') or contains(tolower(CookTime), '{_searchString}') or contains(tolower(RecipeIngredients), '{_searchString}') or contains(tolower(Comments), '{_searchString}') or contains(tolower(Instructions), '{_searchString}') ";
                }
             }
+            
+            if (orderby == null)
+                orderby = "Name asc";
+
             result = await AppService.ListRecipesODataAsync(top, skip, orderby, filter, true, "Tags,Ingredients,Units,Reviews");
         }
         catch (Exception ex)
@@ -240,22 +244,21 @@
             {
                 var ar = result?.Value.ToList().Select(x => new
                 {
-                        x.Id,
-    x.Name,
-    x.Source,
-    x.PrepTime,
-    x.WaitTime,
-    x.CookTime,
-    x.Servings,
-    x.RecipeIngredients,
-    x.Comments,
-    x.Instructions,
-    x.Photo,
-Tags = string.Join(", ", x.Tags?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
-Ingredients = string.Join(", ", x.Ingredients?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
-Units = string.Join(", ", x.Units?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
-Reviews = string.Join(", ", x.Reviews?.Select(x => x.Rating.ToString() ?? string.Empty) ?? []),
-
+                    x.Id,
+                    x.Name,
+                    x.Source,
+                    x.PrepTime,
+                    x.WaitTime,
+                    x.CookTime,
+                    x.Servings,
+                    x.RecipeIngredients,
+                    x.Comments,
+                    x.Instructions,
+                    x.Photo,
+                    Tags = string.Join(", ", x.Tags?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
+                    Ingredients = string.Join(", ", x.Ingredients?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
+                    Units = string.Join(", ", x.Units?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
+                    Reviews = string.Join(", ", x.Reviews?.Select(x => x.Rating.ToString() ?? string.Empty) ?? []),
                 });
 
                 using var memoryStream = new MemoryStream();

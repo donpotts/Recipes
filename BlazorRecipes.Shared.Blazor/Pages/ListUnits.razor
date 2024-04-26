@@ -111,6 +111,10 @@
                    filter = $"contains(tolower(Name), '{_searchString}') ";
                }
             }
+
+            if (orderby == null)
+                orderby = "Name asc";
+
             result = await AppService.ListUnitsODataAsync(top, skip, orderby, filter, true, null);
         }
         catch (Exception ex)
@@ -204,9 +208,8 @@
             {
                 var ar = result?.Value.ToList().Select(x => new
                 {
-                        x.Id,
-    x.Name,
-
+                    x.Id,
+                    x.Name,
                 });
 
                 using var memoryStream = new MemoryStream();

@@ -81,7 +81,7 @@
 
         </AuthorizeView>
         <AuthorizeView Roles="Administrator">
-            <MudNavGroup Title="Admin" Expanded="false" Color="Color.Inherit" Icon="@Icons.Material.Outlined.Settings">
+            <MudNavGroup Title="Admin" Expanded="adminMenu" Color="Color.Inherit" Icon="@Icons.Material.Outlined.Settings">
                 <MudNavLink Href="/recipes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.RestaurantMenu">Recipes</MudNavLink>
                 <MudNavLink Href="/tags" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Tag">Tags</MudNavLink>
                 <MudNavLink Href="/ingredients" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Ingredients</MudNavLink>
@@ -107,6 +107,7 @@
 @code {
     private bool showChipTag;
     private bool drawerOpen = true;
+    private bool adminMenu = false;
     bool _dark = true;
     private bool isDarkMode;
     private MudThemeProvider? mudThemeProvider;
@@ -171,6 +172,7 @@
      private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
     {
         showChipTag = NavManager.Uri.Contains("/cardrecipes");
+        adminMenu = (NavManager.Uri.Contains("/recipes") || NavManager.Uri.Contains("/tags") || NavManager.Uri.Contains("/ingredients") || NavManager.Uri.Contains("/units") || NavManager.Uri.Contains("/recipeingredients") || NavManager.Uri.Contains("/reviews") || NavManager.Uri.Contains("/user"));
         StateHasChanged();
     }
 

@@ -231,12 +231,11 @@
             {
                 var ar = result?.Value.ToList().Select(x => new
                 {
-                        x.Id,
-    x.Quantity,
-     RecipesId = x.Recipes.Id,
-     IngredientsId = x.Ingredients.Id,
-     UnitsId = x.Units.Id,
-
+                    x.Id,
+                    x.Quantity,
+                    RecipesId = x.Recipes.Id,
+                    IngredientsId = x.Ingredients.Id,
+                    UnitsId = x.Units.Id,
                 });
 
                 using var memoryStream = new MemoryStream();
