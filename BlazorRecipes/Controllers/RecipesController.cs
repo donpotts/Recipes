@@ -23,7 +23,7 @@ public class RecipesController(ApplicationDbContext ctx) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult<IQueryable<Recipes>> Get()
     {
-        return Ok(ctx.Recipes.Include(x => x.Tags).Include(x => x.Ingredients).Include(x => x.Units).Include(x => x.Reviews));
+        return Ok(ctx.Recipes.AsNoTracking().Include(x => x.Tags).Include(x => x.Ingredients).Include(x => x.Units).Include(x => x.Reviews));
     }
 
     [HttpGet("{key}")]
@@ -33,7 +33,7 @@ public class RecipesController(ApplicationDbContext ctx) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Recipes>> GetAsync(long key)
     {
-        var recipes = await ctx.Recipes.Include(x => x.Tags).Include(x => x.Ingredients).Include(x => x.Units).Include(x => x.Reviews).FirstOrDefaultAsync(x => x.Id == key);
+        var recipes = await ctx.Recipes.AsNoTracking().Include(x => x.Tags).Include(x => x.Ingredients).Include(x => x.Units).Include(x => x.Reviews).FirstOrDefaultAsync(x => x.Id == key);
 
         if (recipes == null)
         {

@@ -1,9 +1,8 @@
 @using System.Security.Claims
-@using Blazored.LocalStorage
 @using BlazorRecipes.Shared.Blazor.Components.Themes
 @inject AppService AppService
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject ILocalStorageService LocalStorageService
+@inject IStorageService LocalStorageService
 @inject NavigationManager NavManager
 
 <MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" />
@@ -128,7 +127,7 @@
 
     private async Task UpdateThemeManagerLocalStorage()
     {
-        await LocalStorageService.SetItemAsync("themeManager", _themeManager);
+        await LocalStorageService.SetAsync("themeManager", _themeManager);
     }
 
     private async Task ThemeManagerChanged(ThemeManagerModel themeManager)
@@ -156,7 +155,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _themeManager = await LocalStorageService.GetItemAsync<ThemeManagerModel>("themeManager")
+        _themeManager = await LocalStorageService.GetAsync<ThemeManagerModel>("themeManager")
             ?? new()
             {
                 IsDarkMode = false,
