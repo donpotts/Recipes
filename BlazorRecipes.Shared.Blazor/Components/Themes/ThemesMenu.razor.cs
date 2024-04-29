@@ -8,8 +8,6 @@ namespace BlazorRecipes.Shared.Blazor.Components.Themes;
 
 public partial class ThemesMenu
 {
-    //MudOverlay not working!
-    
     private readonly List<string> _primaryColors = new()
     {
         "#594AE2",

@@ -73,11 +73,12 @@
             <MudNavLink Href="/cardrecipes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Restaurant">Recipe Cards</MudNavLink>
             @if (showChipTag)
             {
-                <MudNavLink>
-                    <ChipTag></ChipTag>
-                </MudNavLink>
+                <div style="height: auto; overflow-y: auto;">
+                    <MudNavLink>
+                        <ChipTag></ChipTag>
+                    </MudNavLink>
+                </div>
             }
-
         </AuthorizeView>
         <AuthorizeView Roles="Administrator">
             <MudNavGroup Title="Admin" Expanded="adminMenu" Color="Color.Inherit" Icon="@Icons.Material.Outlined.Settings">
@@ -93,7 +94,7 @@
         <AuthorizeView>
             <Authorized>
                 <MudNavLink Href="/account/changePassword" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Change Password</MudNavLink>
-                <MudNavLink Href="/logout" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">Logout (@context.User.Identity!.Name)</MudNavLink>
+                <MudNavLink Href="/logout" Style="margin-bottom: 10px;" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">Logout (@context.User.Identity!.Name)</MudNavLink>
             </Authorized>
             <NotAuthorized>
                 <MudNavLink Href="/register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Register</MudNavLink>
