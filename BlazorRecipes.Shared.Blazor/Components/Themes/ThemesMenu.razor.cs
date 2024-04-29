@@ -13,6 +13,17 @@ public partial class ThemesMenu
     private readonly List<string> _primaryColors = new()
     {
         "#594AE2",
+        "#1A237E",
+        "#37474F",
+        "#004D40",
+        "#66BB6A",
+        "#1B5E20",
+        "#29B6F6",
+        "#0288D1",
+        "#0277BD",
+        "#01579B",
+        "#616161",
+        "#424242",
         Colors.Green.Default,
         Colors.Blue.Default,
         Colors.BlueGrey.Default,
