@@ -15,7 +15,7 @@ public class Reviews
     [DataMember]
     public decimal Rating { get; set; }
 
-    [StringLength(50, ErrorMessage = "Text must be no more than 50 characters.")]
+    [StringLength(100, ErrorMessage = "Text must be no more than 100 characters.")]
     [DataMember]
     public string? Comment { get; set; }
 
