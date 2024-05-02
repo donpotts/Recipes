@@ -23,7 +23,7 @@ public class TagsController(ApplicationDbContext ctx) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult<IQueryable<Tags>> Get()
     {
-        return Ok(ctx.Tags.OrderBy(i => i.Name).Include(x => x.Recipes));
+        return Ok(ctx.Tags.AsNoTracking().OrderBy(i => i.Name).Include(x => x.Recipes));
     }
 
     [HttpGet("{key}")]
@@ -33,7 +33,7 @@ public class TagsController(ApplicationDbContext ctx) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Tags>> GetAsync(long key)
     {
-        var tags = await ctx.Tags.Include(x => x.Recipes).FirstOrDefaultAsync(x => x.Id == key);
+        var tags = await ctx.Tags.AsNoTracking().Include(x => x.Recipes).FirstOrDefaultAsync(x => x.Id == key);
 
         if (tags == null)
         {
